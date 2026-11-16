@@ -1,0 +1,7 @@
+# 빌드 결과물 (build.sh로 언제든 다시 만들 수 있음)
+RAMBar.app/
+*.o
+.build/
+
+# macOS
+.DS_Store
