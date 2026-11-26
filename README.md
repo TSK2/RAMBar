@@ -24,6 +24,8 @@ RAMBar does one thing: **one dot + one number** in the menu bar, with details an
 - **English & Korean** menu (follows your macOS language), universal binary for Apple Silicon and Intel
 - **Lightweight** — a single Swift file using only Apple frameworks (AppKit, ServiceManagement); the app list is only computed while the menu is open
 
+<p align="center"><img src="docs/menu-en.png" alt="RAMBar menu showing memory pressure, used memory, app memory, wired, compressed, cached files and swap" width="320"></p>
+
 ## Install
 
 ### Download

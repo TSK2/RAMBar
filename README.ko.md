@@ -12,6 +12,9 @@
 - 2초마다 갱신, Dock 아이콘 없음
 - 메뉴 영어/한국어 지원 (macOS 언어 설정을 따름), Apple Silicon · Intel 유니버설 빌드
 
+
+<p align="center"><img src="docs/menu-ko.png" alt="RAMBar 메뉴 — 메모리 압력, 사용량, 앱 메모리, 와이어드, 압축, 캐시, 스왑" width="320"></p>
+
 ## 파일 구성
 
 | 파일 | 설명 |
