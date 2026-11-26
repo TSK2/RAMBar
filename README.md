@@ -1,48 +1,77 @@
 # RAMBar
 
-메뉴바에 `● 72%` 형태로 메모리 압력(점 색)과 사용률을 실시간 표시하는 초경량 macOS 앱.
+**A tiny macOS menu-bar app that shows memory pressure and RAM usage at a glance — and lets you quit memory-hungry apps in one click.**
 
-- 점 색: 초록 = 정상 / 노랑 = 경고 / 빨강 = 위험 (macOS 메모리 압력 기준)
-- 사용률: 활성 상태 보기의 "사용된 메모리"와 같은 계산 (앱 메모리 + 와이어드 + 압축)
-- 클릭 시: 앱 메모리 · 와이어드 · 압축 · 캐시 · 스왑, 활성 상태 보기 열기, 로그인 시 자동 실행, 종료
-- 2초마다 갱신, Dock 아이콘 없음
+[한국어](README.ko.md) · macOS 13+ · Apple Silicon & Intel · English / 한국어 · MIT
 
-## 파일 구성
+<!-- TODO: add a short demo GIF here, e.g. ![RAMBar demo](docs/demo.gif) -->
 
-| 파일 | 설명 |
-|---|---|
-| `main.swift` | 앱 전체 소스 (AppKit 단일 파일) |
-| `Info.plist` | 번들 정보 (`LSUIElement`로 Dock 숨김) |
-| `build.sh` | `RAMBar.app` 빌드 + ad-hoc 서명 |
-| `RAMBar.app` | 빌드 결과물 |
+```
+● 72%      ← lives in your menu bar
+```
 
-## 빌드 & 실행
+## Why
+
+Opening Activity Monitor every time you want to check memory gets old, and most system monitors do far more than you need.
+RAMBar does one thing: **one dot + one number** in the menu bar, with details and a quick cleanup list when you click it.
+
+## Features
+
+- **Pressure dot** — green = normal, yellow = warning, red = critical (macOS memory pressure)
+- **Usage %** — calculated the same way as Activity Monitor's *Memory Used* (App Memory + Wired + Compressed)
+- **Details on click** — app memory, wired, compressed, cached files, swap
+- **Running apps by memory** — top 12 apps, with child processes (Chrome / Electron helpers, etc.) added to their parent app
+  - Click an app to quit it normally (same as ⌘Q — unsaved documents are still prompted)
+  - Apps with **no open windows** are flagged, and you can quit them all at once
+  - Apps whose windows are minimized or on another Space are treated as having windows, so they're never flagged by mistake
+- **Launch at login**, no Dock icon, refreshes every 2 seconds
+- **English & Korean** menu (follows your macOS language), universal binary for Apple Silicon and Intel
+- **Lightweight** — a single Swift file using only Apple frameworks (AppKit, ServiceManagement); the app list is only computed while the menu is open
+
+## Install
+
+### Download
+
+1. Download **[RAMBar.dmg](../../releases/latest/download/RAMBar.dmg)** from the latest [release](../../releases/latest).
+2. Open it and drag **RAMBar** to **Applications**.
+3. First launch: RAMBar is not notarized by Apple yet, so macOS will block it the first time.
+   Go to **System Settings → Privacy & Security**, scroll down, and click **Open Anyway**.
+
+### Build from source
+
+Requires Xcode Command Line Tools (`xcode-select --install`).
 
 ```bash
-./build.sh
+git clone https://github.com/TSK2/RAMBar.git
+cd RAMBar
+./build.sh          # universal RAMBar.app
+./build.sh dmg      # also creates RAMBar.dmg
 open RAMBar.app
 ```
 
-요구 사항: macOS 13+, Xcode Command Line Tools (`xcode-select --install`)
+To keep it running, move `RAMBar.app` to `/Applications` and turn on **Launch at login** from the menu.
 
-## 팁
+## Tips
 
-- 계속 쓸 거면 `RAMBar.app`을 `/Applications`로 옮긴 뒤 메뉴에서 "로그인 시 자동 실행"을 켜기
-- 8GB 맥에서는 %보다 **점 색과 스왑**을 기준으로 판단 (macOS는 남는 RAM을 캐시로 채움)
+- On 8 GB Macs, judge by the **dot color and swap** rather than the percentage — macOS deliberately fills free RAM with cache.
+- Limitation: processes the system spawns separately (e.g. Safari web content) are not added to the app's total.
 
-## 앱 정리 기능 (v1.1)
+## Project structure
 
-메뉴를 열면 "실행 중인 앱"이 메모리 순(상위 12개)으로 표시됨. 하위 프로세스(Chrome·Electron 헬퍼 등)까지 합산.
+| File | Description |
+|---|---|
+| `main.swift` | The whole app (AppKit, single file) |
+| `Info.plist` | Bundle info (`LSUIElement` hides the Dock icon) |
+| `build.sh` | Builds a universal `RAMBar.app` (ad-hoc signed); `./build.sh dmg` also makes `RAMBar.dmg` |
 
-- 앱을 클릭하면 Cmd+Q와 같은 정상 종료 (저장 안 된 문서는 앱이 물어봄)
-- 창이 하나도 없는 앱은 주황색 `창 없음` 표시 → "창 없는 앱 모두 종료"로 한 번에 정리
-- 최소화·다른 데스크탑에 창이 있는 앱은 안전하게 "창 있음"으로 취급
-- Finder는 목록에서 제외, 앱 목록은 메뉴를 열 때만 계산 (평소 부하 없음)
-- 한계: Safari 웹 콘텐츠처럼 시스템이 따로 띄우는 프로세스는 앱 메모리에 합산되지 않음
+## Roadmap
 
-## 라이선스
+- Signed & notarized release
+- Homebrew cask
 
-[MIT License](LICENSE) © 2026 TSK2
+## License
 
-Apple 시스템 프레임워크(AppKit, ServiceManagement)만 사용하며 서드파티 코드는 포함되어 있지 않습니다.
-macOS, 활성 상태 보기(Activity Monitor)는 Apple Inc.의 상표이며, 이 프로젝트는 Apple과 무관합니다.
+[MIT](LICENSE) © 2026 TSK2
+
+RAMBar uses only Apple system frameworks and contains no third-party code.
+macOS and Activity Monitor are trademarks of Apple Inc. This project is not affiliated with Apple.

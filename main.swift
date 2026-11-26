@@ -4,6 +4,11 @@
 import AppKit
 import ServiceManagement
 
+// MARK: - 언어 (시스템 첫 번째 언어가 한국어면 한국어, 그 외에는 영어)
+
+let isKorean = (Locale.preferredLanguages.first ?? "en").hasPrefix("ko")
+func L(_ ko: String, _ en: String) -> String { isKorean ? ko : en }
+
 // MARK: - 시스템 메모리 읽기
 
 struct MemStats {
@@ -138,7 +143,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let compressedItem = NSMenuItem()
     private let cachedItem = NSMenuItem()
     private let swapItem = NSMenuItem()
-    private let loginItem = NSMenuItem(title: "로그인 시 자동 실행", action: #selector(toggleLogin(_:)), keyEquivalent: "")
+    private let loginItem = NSMenuItem(title: L("로그인 시 자동 실행", "Launch at Login"), action: #selector(toggleLogin(_:)), keyEquivalent: "")
     private var timer: Timer?
     private var windowless: [NSRunningApplication] = []
 
@@ -177,12 +182,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         addAppSection()
         menu.addItem(.separator())
-        let am = NSMenuItem(title: "활성 상태 보기 열기", action: #selector(openActivityMonitor), keyEquivalent: "")
+        let am = NSMenuItem(title: L("활성 상태 보기 열기", "Open Activity Monitor"), action: #selector(openActivityMonitor), keyEquivalent: "")
         am.target = self
         menu.addItem(am)
         menu.addItem(loginItem)
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "RAMBar 종료", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: L("RAMBar 종료", "Quit RAMBar"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
     }
 
     private func addAppSection() {
@@ -196,7 +201,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let sorted = apps.sorted { (mem[$0.processIdentifier] ?? 0) > (mem[$1.processIdentifier] ?? 0) }
         windowless = sorted.filter { !$0.isHidden && !withWin.contains($0.processIdentifier) }
 
-        let header = NSMenuItem(title: "실행 중인 앱 · 클릭하면 종료", action: nil, keyEquivalent: "")
+        let header = NSMenuItem(title: L("실행 중인 앱 · 클릭하면 종료", "Running Apps · Click to Quit"), action: nil, keyEquivalent: "")
         header.isEnabled = false
         menu.addItem(header)
 
@@ -210,7 +215,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let t = NSMutableAttributedString(string: app.localizedName ?? "?",
                                               attributes: [.font: font, .paragraphStyle: style])
             if noWin {
-                t.append(NSAttributedString(string: "  창 없음",
+                t.append(NSAttributedString(string: L("  창 없음", "  No windows"),
                     attributes: [.font: NSFont.menuFont(ofSize: 11), .foregroundColor: NSColor.systemOrange,
                                  .paragraphStyle: style]))
             }
@@ -231,7 +236,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         if !windowless.isEmpty {
             let total = windowless.reduce(UInt64(0)) { $0 + (mem[$1.processIdentifier] ?? 0) }
-            let all = NSMenuItem(title: "창 없는 앱 모두 종료 (\(windowless.count)개, \(mbText(total)))",
+            let all = NSMenuItem(title: L("창 없는 앱 모두 종료 (\(windowless.count)개, \(mbText(total)))",
+                                   "Quit All Apps Without Windows (\(windowless.count), \(mbText(total)))"),
                                  action: #selector(quitWindowless), keyEquivalent: "")
             all.target = self
             menu.addItem(all)
@@ -256,9 +262,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         guard let s = readStats(), let button = statusItem.button else { return }
 
         let (color, label): (NSColor, String) = switch s.pressure {
-        case 4: (.systemRed, "위험")
-        case 2: (.systemYellow, "경고")
-        default: (.systemGreen, "정상")
+        case 4: (.systemRed, L("위험", "Critical"))
+        case 2: (.systemYellow, L("경고", "Warning"))
+        default: (.systemGreen, L("정상", "Normal"))
         }
 
         let font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
@@ -267,13 +273,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         title.append(NSAttributedString(string: " \(s.percent)%", attributes: [.font: font]))
         button.attributedTitle = title
 
-        pressureItem.title = "메모리 압력: \(label)"
-        usedItem.title = "사용: \(gb(s.used)) / \(gb(s.total))  (\(s.percent)%)"
-        appItem.title = "  앱 메모리: \(gb(s.app))"
-        wiredItem.title = "  와이어드: \(gb(s.wired))"
-        compressedItem.title = "  압축됨: \(gb(s.compressed))"
-        cachedItem.title = "  캐시된 파일: \(gb(s.cached))"
-        swapItem.title = "  스왑 사용: \(gb(s.swapUsed))"
+        pressureItem.title = L("메모리 압력: ", "Memory Pressure: ") + label
+        usedItem.title = L("사용: ", "Used: ") + "\(gb(s.used)) / \(gb(s.total))  (\(s.percent)%)"
+        appItem.title = L("  앱 메모리: ", "  App Memory: ") + gb(s.app)
+        wiredItem.title = L("  와이어드: ", "  Wired Memory: ") + gb(s.wired)
+        compressedItem.title = L("  압축됨: ", "  Compressed: ") + gb(s.compressed)
+        cachedItem.title = L("  캐시된 파일: ", "  Cached Files: ") + gb(s.cached)
+        swapItem.title = L("  스왑 사용: ", "  Swap Used: ") + gb(s.swapUsed)
         loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
     }
 
