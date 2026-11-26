@@ -2,6 +2,8 @@
 
 [English](README.md) · macOS 13+ · Apple Silicon & Intel · English / 한국어 · MIT
 
+<p align="center"><img src="docs/demo.gif" alt="메뉴바의 RAMBar — 메모리 압력이 내려가면 점이 노랑(경고)에서 초록(정상)으로 바뀜" width="360"></p>
+
 메뉴바에 `● 72%` 형태로 메모리 압력(점 색)과 사용률을 실시간 표시하는 초경량 macOS 앱.
 
 - 점 색: 초록 = 정상 / 노랑 = 경고 / 빨강 = 위험 (macOS 메모리 압력 기준)

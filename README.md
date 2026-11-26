@@ -4,11 +4,7 @@
 
 [한국어](README.ko.md) · macOS 13+ · Apple Silicon & Intel · English / 한국어 · MIT
 
-<!-- TODO: add a short demo GIF here, e.g. ![RAMBar demo](docs/demo.gif) -->
-
-```
-● 72%      ← lives in your menu bar
-```
+<p align="center"><img src="docs/demo.gif" alt="RAMBar in the menu bar — the dot turns from yellow (warning) to green (normal) as memory pressure drops" width="360"></p>
 
 ## Why
 
